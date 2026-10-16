@@ -990,19 +990,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
   btnOpenTv.addEventListener('click', () => {
     const targetUrl = 'https://www.tradingview.com/options/chain/?symbol=COMEX%3AGC1%21';
-    if (typeof chrome !== 'undefined' && chrome.tabs && chrome.tabs.query) {
-      chrome.tabs.query({ url: '*://*.tradingview.com/options/*' }, (tvTabs) => {
-        if (tvTabs && tvTabs.length > 0 && tvTabs[0].id) {
-          chrome.tabs.update(tvTabs[0].id, { active: true });
-          if (tvTabs[0].windowId && chrome.windows && chrome.windows.update) {
-            chrome.windows.update(tvTabs[0].windowId, { focused: true });
-          }
-        } else {
+    if (typeof chrome !== 'undefined' && chrome.tabs && typeof chrome.tabs.create === 'function') {
+      chrome.tabs.query({ active: true, currentWindow: true }, (currentTabs) => {
+        const currentTab = currentTabs && currentTabs[0];
+        const isAlreadyOnOptions = currentTab && currentTab.url && currentTab.url.includes('tradingview.com/options');
+        if (isAlreadyOnOptions) {
+          // Already on TradingView Options tab — open a fresh Options tab as requested
           chrome.tabs.create({ url: targetUrl });
+          return;
         }
+        chrome.tabs.query({ url: '*://*.tradingview.com/options/*' }, (tvTabs) => {
+          if (tvTabs && tvTabs.length > 0 && tvTabs[0].id) {
+            chrome.tabs.update(tvTabs[0].id, { active: true });
+            if (tvTabs[0].windowId && chrome.windows && chrome.windows.update) {
+              chrome.windows.update(tvTabs[0].windowId, { focused: true });
+            }
+          } else {
+            chrome.tabs.create({ url: targetUrl });
+          }
+        });
       });
     } else {
-      window.open(targetUrl, '_blank');
+      window.open(targetUrl, '_blank', 'noopener');
     }
   });
 
