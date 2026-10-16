@@ -247,6 +247,37 @@
         </div>
       </section>
 
+      <!-- 2.5 Vol Term Structure (CME Event Volatility Structure) -->
+      <section class="dash-table-section">
+        <div class="dash-section-header">
+          <div class="dash-section-title-wrap">
+            <h2 class="dash-section-title">Vol Term Structure (CME Event Volatility)</h2>
+            <span class="dash-section-subtitle">Real-time ATM Implied Volatility & Forward Volatility across expirations</span>
+          </div>
+          <div class="dash-section-actions">
+            <span id="dash-ts-update" style="font-size: 11px; color: var(--dash-text-muted); font-family: 'SF Mono', Menlo, monospace;">--</span>
+          </div>
+        </div>
+
+        <div class="dash-table-wrap">
+          <table class="dash-sd-table">
+            <thead>
+              <tr>
+                <th style="text-align: left; padding-left: 14px; width: 140px;">Series / Expiry</th>
+                <th style="text-align: center; width: 70px;">DTE</th>
+                <th style="text-align: center; width: 100px;">ATM IV</th>
+                <th style="text-align: center; width: 140px;">1SD Expected Move</th>
+                <th style="text-align: center; width: 120px;">Forward Vol</th>
+                <th style="text-align: center; width: 100px;">Total Volume</th>
+              </tr>
+            </thead>
+            <tbody id="dash-ts-body">
+              <tr><td colspan="6" style="text-align: center; padding: 14px; color: var(--dash-text-muted);">Waiting for Vol Term Structure data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       <!-- 3. Main Chart Section (Full Widescreen High-Res Canvas) -->
       <section class="dash-chart-section">
         <div class="dash-chart-top-bar">

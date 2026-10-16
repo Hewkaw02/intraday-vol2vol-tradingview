@@ -579,11 +579,148 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // 10. Real-Time Storage & Sync Connection
+  // 10. Vol Term Structure Rendering (CME Event Vol Equivalent)
+  function renderTermStructure(tsData, tsMeta) {
+    const tbody = document.getElementById('dash-ts-body');
+    const tsUpdate = document.getElementById('dash-ts-update');
+    if (!tbody) return;
+
+    if (!tsData || tsData.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: var(--dash-text-muted); padding: 14px;">Waiting for Vol Term Structure data...</td></tr>';
+      return;
+    }
+
+    const meta = tsMeta || {};
+    if (tsUpdate) {
+      const src = meta.source ? ` (${meta.source})` : '';
+      const err = meta.error ? ` [${meta.error}]` : '';
+      if (meta.updatedAt) {
+        const d = new Date(meta.updatedAt);
+        tsUpdate.textContent = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')}${src}${err}`;
+      } else {
+        tsUpdate.textContent = err || '--';
+      }
+    }
+
+    const activeSeriesId = rawData?.series || '';
+    tbody.innerHTML = '';
+    const maxFwd = Math.max(...tsData.map((x) => x.forwardVol || 0), 1);
+    const maxIV = Math.max(...tsData.map((x) => x.atmIV || 0), 1);
+
+    for (const s of tsData) {
+      const isActive = (s.id && s.id === activeSeriesId) || (s.dte === activeDte);
+      const is0DTE = s.dte === 0;
+      const fam = s.family || '';
+      const famColor = fam.startsWith('OG') ? '#f59e0b' : '#3b82f6';
+      const rowBg = isActive ? 'rgba(34,197,94,0.08)' : 'transparent';
+      const rowBorder = isActive ? 'border-left: 3px solid #22c55e;' : 'border-left: 3px solid transparent;';
+
+      const expLabel = s.exp ? `${s.exp.slice(4, 6)}/${s.exp.slice(6, 8)}` : '--';
+      const seriesLabel = is0DTE ? '0DTE' : `${fam} ${expLabel}`;
+
+      const dteDisplay = s.hoursToExpiry < 24
+        ? `${Math.max(0, Math.round(s.hoursToExpiry))}h`
+        : String(s.dte);
+
+      const fwdBarWidth = s.forwardVol ? Math.round((s.forwardVol / maxFwd) * 40) : 0;
+      const ivBarWidth = Math.round((s.atmIV / maxIV) * 50);
+
+      let fwdCell;
+      if (s.forwardVol) {
+        const hasWeekend = s.forwardVolCalendar && Math.abs(s.forwardVol - s.forwardVolCalendar) > 0.05;
+        const tip = hasWeekend
+          ? `Trading-day Fwd Vol: ${s.forwardVol.toFixed(2)}% (Weekend excluded | Calendar: ${s.forwardVolCalendar.toFixed(2)}%)`
+          : `Forward Vol: ${s.forwardVol.toFixed(2)}%`;
+        fwdCell = `<div style="position: relative;" title="${tip}">
+                     <div style="position: absolute; left: 0; top: 0; bottom: 0; width: ${fwdBarWidth}%; background: rgba(249,115,22,0.12); border-radius: 2px;"></div>
+                     <span style="position: relative; color: #f97316; font-weight: 600;">${s.forwardVol.toFixed(2)}%</span>
+                   </div>`;
+      } else if (s.forwardInverted) {
+        fwdCell = '<span style="color: #f23645;" title="Inverted term structure">INV</span>';
+      } else {
+        fwdCell = '<span style="color: var(--dash-text-muted);">--</span>';
+      }
+
+      const tr = document.createElement('tr');
+      tr.style.cssText = `background: ${rowBg}; ${rowBorder} cursor: pointer; transition: background 0.15s;`;
+      tr.addEventListener('mouseenter', () => { tr.style.background = 'rgba(255,255,255,0.04)'; });
+      tr.addEventListener('mouseleave', () => { tr.style.background = rowBg; });
+
+      tr.innerHTML = `
+        <td style="text-align: left; padding: 10px 14px; font-weight: ${isActive ? 700 : 500};">
+          <span style="color: ${famColor}; font-size: 11px; margin-right: 4px;">${fam}</span>
+          <span style="color: ${isActive ? '#22c55e' : 'var(--dash-text-main)'};">${seriesLabel}</span>
+        </td>
+        <td style="text-align: center; padding: 10px 8px; color: ${is0DTE ? '#f23645' : 'var(--dash-text-main)'}; font-weight: ${is0DTE ? 700 : 400};">
+          ${dteDisplay}
+        </td>
+        <td style="text-align: center; padding: 10px 8px; position: relative;">
+          <div style="position: absolute; left: 0; top: 0; bottom: 0; width: ${ivBarWidth}%; background: rgba(59,130,246,0.12); border-radius: 2px;"></div>
+          <span style="position: relative; font-weight: 700; color: #3b82f6;">${s.atmIV ? s.atmIV.toFixed(2) + '%' : '--'}</span>
+        </td>
+        <td style="text-align: center; padding: 10px 8px; color: var(--dash-text-main);">
+          <span style="font-size: 11px; color: var(--dash-text-muted);">±</span>$${s.expectedMove ? s.expectedMove.toFixed(1) : '--'}
+          <span style="font-size: 10px; color: var(--dash-text-muted); margin-left: 2px;">(${s.expectedMovePct ? s.expectedMovePct.toFixed(2) + '%' : '--'})</span>
+        </td>
+        <td style="text-align: center; padding: 10px 8px;">${fwdCell}</td>
+        <td style="text-align: center; padding: 10px 8px; font-size: 11px; color: var(--dash-text-muted);">
+          ${s.totalVol > 0 ? s.totalVol.toLocaleString() : '--'}
+        </td>
+      `;
+
+      tr.addEventListener('click', () => {
+        if (s.dte !== undefined) {
+          recalculateWithDte(s.dte);
+          if (activeTabId && typeof chrome !== 'undefined' && chrome.tabs) {
+            chrome.tabs.sendMessage(activeTabId, { type: 'SET_DTE_MODE', dteMode: s.dte });
+          }
+        }
+      });
+
+      tbody.appendChild(tr);
+    }
+  }
+
+  // 11. State Hydration from Live Storage
+  function applyStateFromStorage(state) {
+    if (!state) return;
+    rawData = {
+      symbol: state.symbol || 'COMEX:GCV2026',
+      series: state.series || null,
+      underlyingPrice: state.underlyingPrice,
+      openPrice: state.openPrice,
+      atmVolatility: state.atmVolatility,
+      volAnchorPrice: state.volAnchorPrice,
+      strikesData: state.strikesData,
+    };
+    activeDte = state.resolvedDte !== undefined ? state.resolvedDte : (state.selectedDteMode ? parseInt(state.selectedDteMode, 10) : 0);
+    if (state.comparisonQuotes) comparisonQuotes = state.comparisonQuotes;
+    if (state.convertedGc1) convertedGc1 = state.convertedGc1;
+    if (state.convertedXau) convertedXau = state.convertedXau;
+    if (state.stats) {
+      renderUI(state.stats, {
+        symbol: state.symbol,
+        source: 'Cached TV Sync',
+        timestamp: state.updatedAt || state.timestamp,
+      });
+      setConnectionStatus('synced', 'SYNCED WITH TV');
+    } else if (rawData && rawData.underlyingPrice && typeof OptionsMath !== 'undefined') {
+      recalculateWithDte(activeDte);
+      setConnectionStatus('synced', 'SYNCED WITH TV');
+    }
+    if (state.activePerspective) {
+      setPerspectiveMode(state.activePerspective);
+    }
+    if (state.termStructureData) {
+      renderTermStructure(state.termStructureData, state.termStructureMeta);
+    }
+  }
+
+  // 12. Real-Time Storage & Sync Connection
   async function initConnection() {
     setConnectionStatus('connecting', 'CONNECTING...');
 
-    // Load saved preferences
+    // Load saved preferences and cached live state
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
       chrome.storage.local.get(['cme_v2v_theme', 'cme_v2v_live_state', 'cme_vol2vol_data'], (res) => {
         if (res.cme_v2v_theme) {
@@ -592,55 +729,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const state = res.cme_v2v_live_state || res.cme_vol2vol_data;
         if (state) {
-          rawData = {
-            symbol: state.symbol || 'COMEX:GCV2026',
-            underlyingPrice: state.underlyingPrice,
-            openPrice: state.openPrice,
-            atmVolatility: state.atmVolatility,
-            volAnchorPrice: state.volAnchorPrice,
-            strikesData: state.strikesData,
-          };
-          activeDte = state.resolvedDte !== undefined ? state.resolvedDte : 0;
-          if (state.comparisonQuotes) comparisonQuotes = state.comparisonQuotes;
-          if (state.convertedGc1) convertedGc1 = state.convertedGc1;
-          if (state.convertedXau) convertedXau = state.convertedXau;
-          if (state.stats) {
-            renderUI(state.stats, {
-              symbol: state.symbol,
-              source: 'Cached TV Sync',
-              timestamp: state.updatedAt || state.timestamp,
-            });
-            setConnectionStatus('synced', 'SYNCED WITH TV');
-          }
-          if (state.activePerspective) {
-            setPerspectiveMode(state.activePerspective);
-          }
+          applyStateFromStorage(state);
         }
       });
 
       // Listen to real-time storage changes
       chrome.storage.onChanged.addListener((changes, area) => {
-        if (area === 'local' && changes.cme_v2v_live_state) {
+        if (area === 'local' && changes.cme_v2v_live_state && changes.cme_v2v_live_state.newValue) {
           const s = changes.cme_v2v_live_state.newValue;
-          if (s && s.stats) {
-            rawData = {
-              symbol: s.symbol,
-              underlyingPrice: s.underlyingPrice,
-              openPrice: s.openPrice,
-              atmVolatility: s.atmVolatility,
-              volAnchorPrice: s.volAnchorPrice,
-              strikesData: s.strikesData,
-            };
-            if (s.comparisonQuotes) comparisonQuotes = s.comparisonQuotes;
-            if (s.convertedGc1) convertedGc1 = s.convertedGc1;
-            if (s.convertedXau) convertedXau = s.convertedXau;
-            renderUI(s.stats, {
-              symbol: s.symbol,
-              source: 'Live Stream',
-              timestamp: s.updatedAt,
-            });
-            setConnectionStatus('live', 'REALTIME STREAMING');
-          }
+          applyStateFromStorage(s);
+          setConnectionStatus('live', 'REALTIME STREAMING');
         }
       });
     }
@@ -651,7 +749,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function queryActiveTab() {
     if (typeof chrome === 'undefined' || !chrome.tabs) {
-      loadFallbackDemo();
+      fallbackToStorageOrDemo();
       return;
     }
 
@@ -693,6 +791,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (response.currentData) {
         rawData = {
           symbol: response.symbol || response.currentData.symbol,
+          series: response.series || response.currentData.series,
           underlyingPrice: response.currentData.underlyingPrice,
           openPrice: response.currentData.openPrice,
           atmVolatility: response.currentData.atmVolatility,
@@ -715,8 +814,12 @@ document.addEventListener('DOMContentLoaded', () => {
           source: 'Live Tab',
           timestamp: response.timestamp,
         });
-      } else if (rawData) {
+      } else if (rawData && rawData.underlyingPrice) {
         recalculateWithDte(activeDte);
+      }
+
+      if (response.termStructureData) {
+        renderTermStructure(response.termStructureData, response.termStructureMeta);
       }
     });
   }
@@ -725,6 +828,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currentStats) {
       setConnectionStatus('synced', 'SYNCED (SAVED)');
       fetchComparisonQuotesFallback();
+      return;
+    }
+    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+      chrome.storage.local.get(['cme_v2v_live_state', 'cme_vol2vol_data'], (res) => {
+        const state = res.cme_v2v_live_state || res.cme_vol2vol_data;
+        if (state && (state.stats || (state.strikesData && state.strikesData.length > 0) || state.underlyingPrice)) {
+          applyStateFromStorage(state);
+          fetchComparisonQuotesFallback();
+          return;
+        }
+        loadFallbackDemo();
+      });
       return;
     }
     loadFallbackDemo();

@@ -626,6 +626,8 @@
           convertedXau: panel?.latestConvertedXau || null,
           selectedDteMode: panel?.selectedDteMode || '0',
           strikeRangeMode: panel?.strikeRangeMode || 'near5',
+          termStructureData: panel?.termStructureData || [],
+          termStructureMeta: panel?.termStructureMeta || {},
           timestamp: Date.now(),
         });
         return true;

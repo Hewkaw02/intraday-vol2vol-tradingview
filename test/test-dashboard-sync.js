@@ -87,6 +87,19 @@ assert.strictEqual(convertedXau.diffFormatted, '+14.2', 'XAUUSD basis should be 
 assert.strictEqual(convertedXau.ranges['ATM'], 4369.2, 'XAUUSD ATM should be 4369.2');
 console.log(`  ✓ XAUUSD Basis Conversion: Basis = ${convertedXau.diffFormatted}, ATM = ${convertedXau.ranges['ATM']}`);
 
+// 5. Test Live Cross-Tab Sync Contract
+console.log('\n[5] Testing Cross-Tab Live Sync Contract:');
+assert(manifest.permissions.includes('tabs'), 'manifest.json must include "tabs" permission for cross-tab sync');
+console.log('  ✓ manifest.json permissions includes "tabs"');
+
+const contentJs = fs.readFileSync(path.join(__dirname, '../src/content/content.js'), 'utf8');
+assert(contentJs.includes('termStructureData: panel?.termStructureData'), 'content.js must include termStructureData in GET_V2V_DATA response');
+console.log('  ✓ content.js provides termStructureData in GET_V2V_DATA response');
+
+assert(overlayJs.includes('stats: stats'), 'overlay-panel.js broadcastState must include stats');
+assert(overlayJs.includes('termStructureData: this.termStructureData'), 'overlay-panel.js broadcastState must include termStructureData');
+console.log('  ✓ overlay-panel.js broadcastState payload includes stats & termStructureData');
+
 console.log('\n================================================================');
 console.log(' ALL DASHBOARD INTEGRATION TESTS PASSED (100%)! ✓');
 console.log('================================================================');

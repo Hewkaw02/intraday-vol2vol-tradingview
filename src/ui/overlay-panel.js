@@ -1112,8 +1112,13 @@
       const active = this.termStructureData.find((r) => r.id === activeId);
       if (active && active.atmIV > 0 && this.currentData &&
           Math.abs((this.currentData.atmVolatility || 0) - active.atmIV) >= 0.01) {
-        this.currentData.atmVolatility = active.atmIV;
-        if (typeof this.recalculateAndRender === 'function') this.recalculateAndRender();
+        if (typeof this.recalculateAndRender === 'function') {
+          this.recalculateAndRender();
+        } else if (this.latestStats) {
+          this.broadcastState(this.latestStats);
+        }
+      } else if (this.latestStats) {
+        this.broadcastState(this.latestStats);
       }
     }
 
@@ -1721,6 +1726,10 @@
             convertedXau: this.latestConvertedXau || null,
             activePerspective: this.activePerspective || '0dte',
             strikesData: this.currentData?.strikesData || [],
+            stats: stats || null,
+            currentData: this.currentData || null,
+            termStructureData: this.termStructureData || [],
+            termStructureMeta: this.termStructureMeta || {},
             updatedAt: Date.now(),
           };
           chrome.storage.local.set({ cme_v2v_live_state: payload });

@@ -498,7 +498,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function initConnection() {
     setConnectionStatus('connecting', 'CONNECTING...');
 
-    // Load saved theme preference
+    // Load saved theme preference and cached live state
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
       chrome.storage.local.get(['cme_v2v_theme', 'cme_v2v_live_state'], (res) => {
         if (res.cme_v2v_theme) {
@@ -506,37 +506,45 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (res.cme_v2v_live_state) {
-          const s = res.cme_v2v_live_state;
-          rawData = {
-            symbol: s.symbol,
-            underlyingPrice: s.underlyingPrice,
-            openPrice: s.openPrice,
-            atmVolatility: s.atmVolatility,
-            volAnchorPrice: s.volAnchorPrice,
-            strikesData: s.strikesData,
-          };
-          activeDte = s.resolvedDte !== undefined ? s.resolvedDte : 0;
-          setDtePillActive(activeDte);
-          if (s.comparisonQuotes) comparisonQuotes = s.comparisonQuotes;
-          if (s.convertedGc1) convertedGc1 = s.convertedGc1;
-          if (s.convertedXau) convertedXau = s.convertedXau;
-          if (s.stats) {
-            renderUI(s.stats, {
-              symbol: s.symbol,
-              source: 'Cached TV Sync',
-              timestamp: s.updatedAt,
-            });
-            setConnectionStatus('synced', 'SYNCED WITH TV');
-          }
-          if (s.activePerspective) {
-            setPerspectiveMode(s.activePerspective);
-          }
+          applyStateFromStorage(res.cme_v2v_live_state);
         }
       });
     }
 
     // Ping active tab
     queryActiveTab();
+  }
+
+  function applyStateFromStorage(s) {
+    if (!s) return;
+    rawData = {
+      symbol: s.symbol,
+      series: s.series || null,
+      underlyingPrice: s.underlyingPrice,
+      openPrice: s.openPrice,
+      atmVolatility: s.atmVolatility,
+      volAnchorPrice: s.volAnchorPrice,
+      strikesData: s.strikesData,
+    };
+    activeDte = s.resolvedDte !== undefined ? s.resolvedDte : (s.selectedDteMode ? parseInt(s.selectedDteMode, 10) : 0);
+    setDtePillActive(activeDte);
+    if (s.comparisonQuotes) comparisonQuotes = s.comparisonQuotes;
+    if (s.convertedGc1) convertedGc1 = s.convertedGc1;
+    if (s.convertedXau) convertedXau = s.convertedXau;
+    if (s.stats) {
+      renderUI(s.stats, {
+        symbol: s.symbol,
+        source: 'Cached TV Sync',
+        timestamp: s.updatedAt || s.timestamp,
+      });
+      setConnectionStatus('synced', 'SYNCED WITH TV');
+    } else if (rawData && rawData.underlyingPrice && typeof OptionsMath !== 'undefined') {
+      recalculateWithDte(activeDte);
+      setConnectionStatus('synced', 'SYNCED WITH TV');
+    }
+    if (s.activePerspective) {
+      setPerspectiveMode(s.activePerspective);
+    }
   }
 
   function setDtePillActive(dteVal) {
@@ -552,7 +560,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function queryActiveTab() {
     if (typeof chrome === 'undefined' || !chrome.tabs) {
-      loadFallbackDemo();
+      fallbackToStorageOrDemo();
       return;
     }
 
@@ -595,6 +603,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (response.currentData) {
         rawData = {
           symbol: response.symbol || response.currentData.symbol,
+          series: response.series || response.currentData.series,
           underlyingPrice: response.currentData.underlyingPrice,
           openPrice: response.currentData.openPrice,
           atmVolatility: response.currentData.atmVolatility,
@@ -618,7 +627,7 @@ document.addEventListener('DOMContentLoaded', () => {
           source: 'Live Tab',
           timestamp: response.timestamp,
         });
-      } else if (rawData) {
+      } else if (rawData && rawData.underlyingPrice) {
         recalculateWithDte(activeDte);
       }
     });
@@ -628,6 +637,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currentStats) {
       setConnectionStatus('synced', 'SYNCED (SAVED)');
       fetchComparisonQuotesFallback();
+      return;
+    }
+    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+      chrome.storage.local.get(['cme_v2v_live_state'], (res) => {
+        if (res && res.cme_v2v_live_state) {
+          const s = res.cme_v2v_live_state;
+          if (s.stats || (s.strikesData && s.strikesData.length > 0) || s.underlyingPrice) {
+            applyStateFromStorage(s);
+            fetchComparisonQuotesFallback();
+            return;
+          }
+        }
+        loadFallbackDemo();
+      });
       return;
     }
     loadFallbackDemo();
@@ -742,28 +765,8 @@ document.addEventListener('DOMContentLoaded', () => {
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area === 'local' && changes.cme_v2v_live_state && changes.cme_v2v_live_state.newValue) {
         const s = changes.cme_v2v_live_state.newValue;
-        rawData = {
-          symbol: s.symbol,
-          underlyingPrice: s.underlyingPrice,
-          openPrice: s.openPrice,
-          atmVolatility: s.atmVolatility,
-          volAnchorPrice: s.volAnchorPrice,
-          strikesData: s.strikesData,
-        };
-        if (s.comparisonQuotes) comparisonQuotes = s.comparisonQuotes;
-        if (s.convertedGc1) convertedGc1 = s.convertedGc1;
-        if (s.convertedXau) convertedXau = s.convertedXau;
-        if (s.stats) {
-          setConnectionStatus('live', 'LIVE TICK UPDATED');
-          renderUI(s.stats, {
-            symbol: s.symbol,
-            source: 'Live Tick',
-            timestamp: s.updatedAt,
-          });
-        }
-        if (s.activePerspective && s.activePerspective !== activePerspective) {
-          setPerspectiveMode(s.activePerspective);
-        }
+        applyStateFromStorage(s);
+        setConnectionStatus('live', 'LIVE TICK UPDATED');
       }
     });
   }
