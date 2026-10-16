@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CME Vol2Vol Options Intelligence</title>
+  <link rel="stylesheet" href="popup.css" />
+  <link rel="stylesheet" href="../content/overlay.css" />
+</head>
+<body class="cme-v2v-theme-dark">
+  <div class="popup-container">
+    <!-- Header Bar with Live Tab Sync Status -->
+    <div class="popup-header">
+      <div class="popup-brand">
+        <span class="popup-logo">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-5h2v5zm4 0h-2v-8h2v8zm4 0h-2v-3h2v3z"/></svg>
+        </span>
+        <div class="popup-brand-text">
+          <strong>CME Vol2Vol™</strong>
+          <span class="popup-symbol-badge" id="pop-symbol-badge">COMEX:GCV2026</span>
+        </div>
+      </div>
+      <div class="popup-header-controls">
+        <div class="popup-live-badge" id="pop-status-badge" title="Live Connection Status">
+          <span class="live-dot" id="pop-live-dot"></span>
+          <span id="pop-status-text">CONNECTING...</span>
+        </div>
+        <button class="pop-icon-btn" id="btn-quick-sync" title="Sync live data from TradingView">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+        </button>
+        <button class="pop-icon-btn" id="btn-theme-toggle" title="Toggle Theme">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick DTE Selector Pills (Intuitive & Easy to use) -->
+    <div class="pop-dte-bar">
+      <span class="pop-dte-lbl">EXPIRY (DTE):</span>
+      <div class="pop-dte-pills" id="pop-dte-pills">
+        <button class="dte-pill active" data-dte="0" title="0 DTE Intraday (Default)">0 DTE</button>
+        <button class="dte-pill" data-dte="1" title="1 DTE (Next Day)">1 DTE</button>
+        <button class="dte-pill" data-dte="7" title="7 DTE (Weekly)">7 DTE</button>
+        <button class="dte-pill" data-dte="14" title="14 DTE (2 Weeks)">14 DTE</button>
+        <button class="dte-pill" data-dte="30" title="30 DTE (Monthly)">30 DTE</button>
+      </div>
+    </div>
+
+    <!-- Primary Metric Cards Grid -->
+    <div class="popup-cards">
+      <!-- Future Settlement Price Card -->
+      <div class="card card-price">
+        <div class="card-header-row">
+          <span class="card-title">Future Stl (S)</span>
+          <span class="card-tag" id="pop-tag-series">0DTE Benchmark</span>
+        </div>
+        <div class="card-val price-val" id="pop-val-price">4,355.0</div>
+        <div class="card-sub" id="pop-sub-open">Open: 4,328.0 <span id="pop-net-change" style="color: #22c55e;">(+$27.0)</span></div>
+        <div class="card-sub-extra" id="pop-sub-iv">ATM Vol Stl: <strong>23.58%</strong></div>
+      </div>
+
+      <!-- Volume Dominance Card -->
+      <div class="card card-dom">
+        <div class="card-header-row">
+          <span class="card-title">Volume Dominance</span>
+          <span class="card-tag card-tag-flow" id="pop-tag-flow">Bullish Flow</span>
+        </div>
+        <div class="card-val dom-val" id="pop-val-dom">CALLS (+58.5%)</div>
+        <div class="card-sub" id="pop-sub-dom">PCR: 0.27 | CPR: 3.71</div>
+        <!-- Visual Dominance Ratio Bar -->
+        <div class="pop-dom-bar-wrap" title="Call Vol vs Put Vol Share">
+          <div class="pop-dom-bar">
+            <div class="pop-dom-fill call-fill" id="pop-dom-fill-call" style="width: 79%;"></div>
+            <div class="pop-dom-fill put-fill" id="pop-dom-fill-put" style="width: 21%;"></div>
+          </div>
+          <div class="pop-dom-labels">
+            <span id="pop-dom-lbl-call">Calls: 2,315</span>
+            <span id="pop-dom-lbl-put">Puts: 607</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Volume-Weighted Mean Strikes Grid -->
+    <div class="popup-means-grid">
+      <div class="mean-item mean-call">
+        <span class="mean-lbl">Mean Call Strike</span>
+        <strong id="pop-mean-call">4,417.3</strong>
+        <span class="mean-diff" id="pop-mean-call-diff">+$62.3 from Stl</span>
+      </div>
+      <div class="mean-item mean-both">
+        <span class="mean-lbl">Mean Both (Center)</span>
+        <strong id="pop-mean-both">4,387.8</strong>
+        <span class="mean-diff" id="pop-mean-both-diff">+$32.8 from Stl</span>
+      </div>
+      <div class="mean-item mean-put">
+        <span class="mean-lbl">Mean Put Strike</span>
+        <strong id="pop-mean-put">4,275.5</strong>
+        <span class="mean-diff" id="pop-mean-put-diff">-$79.5 from Stl</span>
+      </div>
+    </div>
+
+    <!-- Standard Deviation Expected Ranges Section -->
+    <div class="popup-section sd-section">
+      <div class="sd-section-header">
+        <div class="sd-title-wrap">
+          <span class="sd-section-title">Expected Range (1SD, 2SD, 3SD)</span>
+          <span class="sd-move-pill" id="pop-sd-move-summary">1SD: ±$53.9 (1.24%)</span>
+        </div>
+        <div class="sd-controls">
+          <div class="pop-toggle-group">
+            <button class="pop-toggle-btn active" id="btn-anchor-current" title="Center bands at Current Future Stl">From Stl</button>
+            <button class="pop-toggle-btn" id="btn-anchor-open" title="Center bands at Day Open">From Open</button>
+          </div>
+          <button class="pop-btn-sm" id="btn-copy-sd" title="Copy SD ranges to clipboard for trade notes"><svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor" style="vertical-align: -1px;"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Copy</button>
+        </div>
+      </div>
+
+      <!-- SD Ranges Table -->
+      <div class="table-wrap">
+        <table class="cme-v2v-table">
+          <thead>
+            <tr>
+              <th style="font-size: 9.5px; width: 66px; text-align: left; padding-left: 6px;">Asset / Ref</th>
+              <th>-3 SD</th>
+              <th>-2 SD</th>
+              <th>-1 SD</th>
+              <th class="cme-v2v-th-atm">Center</th>
+              <th>+1 SD</th>
+              <th>+2 SD</th>
+              <th>+3 SD</th>
+            </tr>
+          </thead>
+          <tbody id="pop-table-body">
+            <!-- Row 1: 0DTE Stl Base -->
+            <tr id="pop-row-stl">
+              <td style="color: #f23645; font-weight: 700; font-size: 9.5px; text-align: left; padding-left: 6px;" id="pop-table-stl-lbl"><svg viewBox="0 0 24 24" width="10" height="10" fill="#f23645" style="vertical-align: -1px;"><path d="M17 10H7v2h10v-2zm2-7h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zm-5-5H7v2h7v-2z"/></svg> 0DTE</td>
+              <td id="pop-sd-m3">--</td>
+              <td id="pop-sd-m2">--</td>
+              <td id="pop-sd-m1" style="color: #60a5fa; font-weight: 600;">--</td>
+              <td class="cme-v2v-td-atm" id="pop-sd-atm">--</td>
+              <td id="pop-sd-p1" style="color: #60a5fa; font-weight: 600;">--</td>
+              <td id="pop-sd-p2">--</td>
+              <td id="pop-sd-p3">--</td>
+            </tr>
+            <!-- Row 2: GC1! Futures Converted -->
+            <tr id="pop-row-gc1" class="pop-row-compare-gc1">
+              <td style="color: #f59e0b; font-weight: 700; font-size: 9.5px; text-align: left; padding-left: 6px;">
+                <span><svg viewBox="0 0 24 24" width="10" height="10" fill="#f59e0b" style="vertical-align: -1px;"><path d="M15 4c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zM3 12c0-2.61 1.67-4.83 4-5.65V4.26C3.55 5.15 1 8.27 1 12s2.55 6.85 6 7.74v-2.09c-2.33-.82-4-3.04-4-5.65z"/></svg> GOLD.F</span>
+                <span class="pop-diff-badge" id="pop-diff-gc1">--</span>
+              </td>
+              <td id="pop-gc1-m3">--</td>
+              <td id="pop-gc1-m2">--</td>
+              <td id="pop-gc1-m1">--</td>
+              <td style="font-weight: 700; color: #f59e0b;" id="pop-gc1-atm">--</td>
+              <td id="pop-gc1-p1">--</td>
+              <td id="pop-gc1-p2">--</td>
+              <td id="pop-gc1-p3">--</td>
+            </tr>
+            <!-- Row 3: XAUUSD CFD Converted -->
+            <tr id="pop-row-xau" class="pop-row-compare-xau">
+              <td style="color: #06b6d4; font-weight: 700; font-size: 9.5px; text-align: left; padding-left: 6px;">
+                <span><svg viewBox="0 0 24 24" width="10" height="10" fill="#06b6d4" style="vertical-align: -1px;"><path d="M12.89 11.1c-1.78-.59-2.64-.96-2.64-1.9 0-1.02 1.11-1.39 1.81-1.39 1.31 0 1.79.99 1.9 1.34l1.58-.67c-.15-.44-.82-1.91-2.66-2.23V5h-1.75v1.26c-2.6.56-2.62 2.85-2.62 2.96 0 2.27 2.21 2.88 3.14 3.16 1.77.53 2.13 1.02 2.13 1.73 0 1.06-1.05 1.57-1.98 1.57-.96 0-1.83-.57-2.09-1.64l-1.61.66c.58 1.62 1.57 2.33 3.03 2.56V19h1.75v-1.73c.7-.12 2.85-.78 2.85-3.15 0-1.6-.8-2.67-2.84-3.42z"/></svg> XAU</span>
+                <span class="pop-diff-badge" id="pop-diff-xau">--</span>
+              </td>
+              <td id="pop-xau-m3">--</td>
+              <td id="pop-xau-m2">--</td>
+              <td id="pop-xau-m1">--</td>
+              <td style="font-weight: 700; color: #06b6d4;" id="pop-xau-atm">--</td>
+              <td id="pop-xau-p1">--</td>
+              <td id="pop-xau-p2">--</td>
+              <td id="pop-xau-p3">--</td>
+            </tr>
+            <!-- Row 4: Day Open -->
+            <tr id="pop-row-open">
+              <td style="color: #22c55e; font-weight: 700; font-size: 9.5px; text-align: left; padding-left: 6px;">
+                <span id="pop-lbl-open-row">Open</span>
+              </td>
+              <td id="pop-open-m3">--</td>
+              <td id="pop-open-m2">--</td>
+              <td id="pop-open-m1">--</td>
+              <td style="font-weight: 700; color: #22c55e;" id="pop-open-atm">--</td>
+              <td id="pop-open-p1">--</td>
+              <td id="pop-open-p2">--</td>
+              <td id="pop-open-p3">--</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Mini Vol2Vol Expected Range Chart -->
+    <div class="popup-section chart-section">
+      <div class="chart-header-row">
+        <span class="chart-header-title" id="pop-chart-title">Vol2Vol™ Volume & Vol Stl Smile</span>
+        <div style="display: flex; gap: 6px; align-items: center;">
+          <div class="pop-persp-pills" id="pop-persp-pills">
+            <button type="button" class="pop-persp-pill active" data-persp="0dte" title="0DTE Options Baseline">0DTE</button>
+            <button type="button" class="pop-persp-pill" data-persp="goldf" title="Shift to GOLD.F Basis">GOLD.F</button>
+            <button type="button" class="pop-persp-pill" data-persp="xau" title="Shift to XAU Spot Basis">XAU</button>
+          </div>
+          <div class="chart-range-select-wrap">
+            <label for="pop-strike-range">Window:</label>
+            <select id="pop-strike-range" class="pop-select-sm">
+              <option value="near5" selected>Near ±5% (ATM)</option>
+              <option value="near3">Near ±3% (Tight)</option>
+              <option value="near10">Near ±10% (Wide)</option>
+              <option value="all">All Strikes</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="popup-chart-wrap">
+        <canvas id="popup-canvas"></canvas>
+      </div>
+    </div>
+
+    <!-- Actions & Footer -->
+    <div class="popup-footer">
+      <button id="btn-open-standalone" class="popup-btn popup-btn-secondary" title="Open large Full Dashboard in new tab">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+        <span>Full Dashboard</span>
+      </button>
+      <button id="btn-open-tv" class="popup-btn popup-btn-primary" title="Go to TradingView Options Chain page">
+        <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+        <span>TradingView Tab</span>
+      </button>
+    </div>
+
+    <div class="popup-footnote">
+      <span id="pop-sync-timestamp">Synced with live TradingView session</span>
+    </div>
+  </div>
+
+  <script src="../core/options-math.js"></script>
+  <script src="../core/data-parser.js"></script>
+  <script src="../ui/vol2vol-chart.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

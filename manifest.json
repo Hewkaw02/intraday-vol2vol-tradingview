@@ -1,0 +1,68 @@
+{
+  "manifest_version": 3,
+  "name": "TradingView CME Vol2Vol™ Options Intelligence",
+  "version": "1.0.0",
+  "description": "Analyzes Call/Put volume dominance, calculates Mean Call, Mean Put, Mean Both, and renders the CME QuikStrike Vol2Vol Expected Range chart with IV smile curve on TradingView.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "src/popup/popup.html",
+    "default_icon": "icons/icon48.png",
+    "default_title": "CME Vol2Vol Options Intelligence"
+  },
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "*://*.tradingview.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.tradingview.com/options/*",
+        "*://*.tradingview.com/*/options/*"
+      ],
+      "js": [
+        "src/core/tv-interceptor.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "*://*.tradingview.com/options/*",
+        "*://*.tradingview.com/*/options/*"
+      ],
+      "js": [
+        "src/core/options-math.js",
+        "src/core/data-parser.js",
+        "src/ui/vol2vol-chart.js",
+        "src/ui/overlay-panel.js",
+        "src/content/content.js"
+      ],
+      "css": [
+        "src/content/overlay.css"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "src/core/tv-interceptor.js",
+        "src/content/overlay.css",
+        "standalone-test.html",
+        "src/dashboard/*",
+        "icons/*"
+      ],
+      "matches": [
+        "*://*.tradingview.com/*"
+      ]
+    }
+  ]
+}

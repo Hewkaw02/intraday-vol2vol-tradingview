@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CME Vol2Vol™ Options Intelligence — Pro Widescreen Terminal</title>
+  <link rel="stylesheet" href="../content/overlay.css" />
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+<body class="cme-v2v-theme-dark">
+  <div class="dash-container">
+    <!-- Top Navigation Header -->
+    <header class="dash-navbar">
+      <div class="dash-brand">
+        <span class="dash-logo">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-5h2v5zm4 0h-2v-8h2v8zm4 0h-2v-3h2v3z"/></svg>
+        </span>
+        <div class="dash-brand-titles">
+          <div class="dash-title-main">
+            <strong>CME Vol2Vol™ Options Intelligence</strong>
+            <span class="dash-badge-symbol" id="dash-symbol-badge">COMEX:GCV2026</span>
+            <span class="dash-badge-tag" id="dash-tag-dte">0 DTE Intraday</span>
+          </div>
+          <div class="dash-title-sub" id="dash-headline-text">
+            Volatility Settlement Smile, Expected Range (1-3 SD), and Multi-Asset Basis Spread
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-nav-actions">
+        <!-- Live Status Indicator -->
+        <div class="dash-status-pill" id="dash-status-badge" title="Live Connection Status">
+          <span class="cme-v2v-live-dot" id="dash-status-dot"></span>
+          <span id="dash-status-text">CONNECTING...</span>
+        </div>
+
+        <button class="dash-btn-action" id="btn-dash-sync" title="Sync live data from TradingView">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+          <span>Sync Now</span>
+        </button>
+
+        <button class="dash-btn-action" id="btn-dash-theme" title="Toggle Dark / Light Theme">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+          <span id="txt-dash-theme">Theme</span>
+        </button>
+
+        <a href="https://www.tradingview.com/options/chain/?symbol=COMEX%3AGC1%21" target="_blank" class="dash-btn-action dash-btn-tv" title="Open TradingView Options Chain">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg>
+          <span>TradingView</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="dash-main">
+      <!-- 1. Top KPI Summary Cards Row -->
+      <section class="dash-cards-grid">
+        <!-- Future Settlement Price Card -->
+        <div class="dash-kpi-card card-price">
+          <div class="dash-card-header">
+            <span class="dash-card-title">Future Stl (S)</span>
+            <span class="dash-card-pill" id="dash-tag-series">0DTE Benchmark</span>
+          </div>
+          <div class="dash-kpi-value" id="dash-val-price">4,355.0</div>
+          <div class="dash-card-sub" id="dash-sub-open">
+            Open: 4,328.0 <span id="dash-net-change" style="color: #22c55e;">(+$27.0 / +0.62%)</span>
+          </div>
+          <div class="dash-card-extra" id="dash-sub-iv">
+            ATM Vol Stl: <strong>23.66%</strong>
+          </div>
+        </div>
+
+        <!-- Volume Dominance Card -->
+        <div class="dash-kpi-card card-dom">
+          <div class="dash-card-header">
+            <span class="dash-card-title">Volume Dominance</span>
+            <span class="dash-card-pill dash-tag-flow" id="dash-tag-flow">Bullish Flow</span>
+          </div>
+          <div class="dash-kpi-value dom-val" id="dash-val-dom">CALLS (+58.5%)</div>
+          <div class="dash-card-sub" id="dash-sub-dom">PCR: 0.262 | CPR: 3.814</div>
+          <!-- Share Bar -->
+          <div class="dash-share-bar-wrap">
+            <div class="dash-share-bar">
+              <div class="dash-share-fill call-fill" id="dash-share-call" style="width: 79%;"></div>
+              <div class="dash-share-fill put-fill" id="dash-share-put" style="width: 21%;"></div>
+            </div>
+            <div class="dash-share-labels">
+              <span id="dash-lbl-call">Calls: 2,315 (79%)</span>
+              <span id="dash-lbl-put">Puts: 607 (21%)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 1SD Expected Move Card -->
+        <div class="dash-kpi-card card-sd">
+          <div class="dash-card-header">
+            <span class="dash-card-title">1SD Expected Move</span>
+            <span class="dash-card-pill" style="color: #60a5fa; background: rgba(96, 165, 250, 0.15);">68.3% Confidence</span>
+          </div>
+          <div class="dash-kpi-value" id="dash-val-1sd" style="color: #60a5fa;">±$53.9</div>
+          <div class="dash-card-sub" id="dash-sub-1sd-pct">
+            Percentage Move: <strong>1.24%</strong>
+          </div>
+          <div class="dash-card-extra" id="dash-sub-open-1sd">
+            From Day Open 1SD: <strong>±$53.6</strong>
+          </div>
+        </div>
+
+        <!-- Volume-Weighted Mean Strikes Card -->
+        <div class="dash-kpi-card card-means">
+          <div class="dash-card-header">
+            <span class="dash-card-title">Weighted Mean Strikes</span>
+            <span class="dash-card-pill" style="color: #a78bfa; background: rgba(167, 139, 250, 0.15);">Center of Gravity</span>
+          </div>
+          <div class="dash-means-triad">
+            <div class="mean-box mean-call">
+              <span class="mean-box-lbl">Call Mean</span>
+              <strong id="dash-mean-call">4,417.3</strong>
+              <span class="mean-box-diff" id="dash-mean-call-diff">+$62.3</span>
+            </div>
+            <div class="mean-box mean-both">
+              <span class="mean-box-lbl">Center Both</span>
+              <strong id="dash-mean-both">4,387.8</strong>
+              <span class="mean-box-diff" id="dash-mean-both-diff">+$32.8</span>
+            </div>
+            <div class="mean-box mean-put">
+              <span class="mean-box-lbl">Put Mean</span>
+              <strong id="dash-mean-put">4,275.5</strong>
+              <span class="mean-box-diff" id="dash-mean-put-diff">-$79.5</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. Multi-Asset Standard Deviation Ranges Table (Spacious Full Width) -->
+      <section class="dash-table-section">
+        <div class="dash-section-header">
+          <div class="dash-section-title-wrap">
+            <h2 class="dash-section-title">Standard Deviation Expected Ranges & Multi-Asset Basis Spread</h2>
+            <span class="dash-section-subtitle" id="dash-sd-summary">
+              Anchored to 0DTE Delivery Contract (COMEX:GCV2026) vs BLACKBULL:GOLD.F & OANDA:XAUUSD
+            </span>
+          </div>
+          <div class="dash-section-actions">
+            <div class="dash-toggle-group">
+              <button class="dash-toggle-btn active" id="btn-anchor-current" title="Anchor SD to Current Price (S)">Current Stl</button>
+              <button class="dash-toggle-btn" id="btn-anchor-open" title="Anchor SD to Day Open">Day Open</button>
+            </div>
+            <button class="dash-btn-sm" id="btn-copy-sd" title="Copy Multi-Asset SD Levels Breakdown">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+              <span>Copy Levels</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="dash-table-wrap">
+          <table class="dash-sd-table">
+            <thead>
+              <tr>
+                <th style="text-align: left; padding-left: 12px; width: 180px;">Reference Contract / Asset</th>
+                <th>-3 SD (99.7%)</th>
+                <th>-2 SD (95.4%)</th>
+                <th>-1 SD (68.3%)</th>
+                <th class="th-atm">Center / Base</th>
+                <th>+1 SD (68.3%)</th>
+                <th>+2 SD (95.4%)</th>
+                <th>+3 SD (99.7%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Row 1: 0DTE Options Underlying -->
+              <tr id="dash-row-stl" class="dash-row-selectable dash-row-active" title="Click to view in 0DTE Options Baseline Perspective">
+                <td style="text-align: left; padding-left: 14px; font-weight: 700; color: #f23645;">
+                  <span id="dash-lbl-stl-row" style="display: inline-flex; align-items: center; gap: 6px;">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="#f23645" style="vertical-align: -1px;"><path d="M17 10H7v2h10v-2zm2-7h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zm-5-5H7v2h7v-2z"/></svg>
+                    0DTE GCV2026
+                  </span>
+                </td>
+                <td id="dash-sd-m3">--</td>
+                <td id="dash-sd-m2">--</td>
+                <td id="dash-sd-m1" style="color: #60a5fa; font-weight: 600;">--</td>
+                <td class="td-atm" id="dash-sd-atm" style="font-weight: 700;">--</td>
+                <td id="dash-sd-p1" style="color: #60a5fa; font-weight: 600;">--</td>
+                <td id="dash-sd-p2">--</td>
+                <td id="dash-sd-p3">--</td>
+              </tr>
+
+              <!-- Row 2: GOLD.F Futures CFD -->
+              <tr id="dash-row-goldf" class="dash-row-selectable dash-row-goldf" title="Click to shift chart perspective to BLACKBULL:GOLD.F (Basis Spread)">
+                <td style="text-align: left; padding-left: 14px; font-weight: 700; color: #f59e0b;">
+                  <span style="display: inline-flex; align-items: center; gap: 6px;">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="#f59e0b" style="vertical-align: -1px;"><path d="M15 4c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zM3 12c0-2.61 1.67-4.83 4-5.65V4.26C3.55 5.15 1 8.27 1 12s2.55 6.85 6 7.74v-2.09c-2.33-.82-4-3.04-4-5.65z"/></svg>
+                    GOLD.F
+                    <span class="dash-diff-badge" id="dash-diff-goldf">Basis: --</span>
+                  </span>
+                </td>
+                <td id="dash-goldf-m3">--</td>
+                <td id="dash-goldf-m2">--</td>
+                <td id="dash-goldf-m1">--</td>
+                <td class="td-atm" style="font-weight: 700; color: #f59e0b;" id="dash-goldf-atm">--</td>
+                <td id="dash-goldf-p1">--</td>
+                <td id="dash-goldf-p2">--</td>
+                <td id="dash-goldf-p3">--</td>
+              </tr>
+
+              <!-- Row 3: XAUUSD Spot CFD -->
+              <tr id="dash-row-xau" class="dash-row-selectable dash-row-xau" title="Click to shift chart perspective to OANDA:XAUUSD (Basis Spread)">
+                <td style="text-align: left; padding-left: 14px; font-weight: 700; color: #06b6d4;">
+                  <span style="display: inline-flex; align-items: center; gap: 6px;">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="#06b6d4" style="vertical-align: -1px;"><path d="M12.89 11.1c-1.78-.59-2.64-.96-2.64-1.9 0-1.02 1.11-1.39 1.81-1.39 1.31 0 1.79.99 1.9 1.34l1.58-.67c-.15-.44-.82-1.91-2.66-2.23V5h-1.75v1.26c-2.6.56-2.62 2.85-2.62 2.96 0 2.27 2.21 2.88 3.14 3.16 1.77.53 2.13 1.02 2.13 1.73 0 1.06-1.05 1.57-1.98 1.57-.96 0-1.83-.57-2.09-1.64l-1.61.66c.58 1.62 1.57 2.33 3.03 2.56V19h1.75v-1.73c.7-.12 2.85-.78 2.85-3.15 0-1.6-.8-2.67-2.84-3.42z"/></svg>
+                    XAU Spot
+                    <span class="dash-diff-badge" id="dash-diff-xau">Basis: --</span>
+                  </span>
+                </td>
+                <td id="dash-xau-m3">--</td>
+                <td id="dash-xau-m2">--</td>
+                <td id="dash-xau-m1">--</td>
+                <td class="td-atm" style="font-weight: 700; color: #06b6d4;" id="dash-xau-atm">--</td>
+                <td id="dash-xau-p1">--</td>
+                <td id="dash-xau-p2">--</td>
+                <td id="dash-xau-p3">--</td>
+              </tr>
+
+              <!-- Row 4: Day Open -->
+              <tr id="dash-row-open" class="dash-row-selectable" title="Click to anchor SD chart overlay to Day Open Price">
+                <td style="text-align: left; padding-left: 14px; font-weight: 700; color: #22c55e;">
+                  <span style="display: inline-flex; align-items: center; gap: 6px;">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="#22c55e" style="vertical-align: -1px;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                    <span id="dash-lbl-open-row">From Open (0DTE)</span>
+                  </span>
+                </td>
+                <td id="dash-open-m3">--</td>
+                <td id="dash-open-m2">--</td>
+                <td id="dash-open-m1">--</td>
+                <td class="td-atm" style="font-weight: 700; color: #22c55e;" id="dash-open-atm">--</td>
+                <td id="dash-open-p1">--</td>
+                <td id="dash-open-p2">--</td>
+                <td id="dash-open-p3">--</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 3. Main Chart Section (Full Widescreen High-Res Canvas) -->
+      <section class="dash-chart-section">
+        <div class="dash-chart-top-bar">
+          <div class="dash-chart-title-group">
+            <h2 class="dash-chart-title" id="dash-chart-title-text">
+              COMEX:GCV2026 VOL2VOL™ EXPECTED RANGE INTRADAY VOLUME
+            </h2>
+            <div class="dash-legend">
+              <span class="dash-legend-item">
+                <span class="dash-legend-swatch put"></span>
+                <span id="dash-legend-put">Puts (607)</span>
+              </span>
+              <span class="dash-legend-item">
+                <span class="dash-legend-swatch call"></span>
+                <span id="dash-legend-call">Calls (2,315)</span>
+              </span>
+              <span class="dash-legend-item">
+                <span class="dash-legend-dash vol"></span>
+                <span id="dash-legend-vol">Vol Stl (23.66%)</span>
+              </span>
+              <span class="dash-legend-item">
+                <span class="dash-legend-dot future"></span>
+                <span id="dash-legend-future">Future Stl (4,355.0)</span>
+              </span>
+              <span class="dash-legend-item">
+                <span class="dash-legend-dot open"></span>
+                <span id="dash-legend-open" style="color: #22c55e;">Open (4,328.0)</span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Chart Controls Bar -->
+          <div class="dash-chart-controls">
+            <!-- Perspective Selector Pills -->
+            <div class="dash-control-group">
+              <span class="dash-control-lbl">Perspective:</span>
+              <div class="dash-persp-pills">
+                <button type="button" class="dash-persp-btn active" data-persp="0dte" title="View 0DTE Options Baseline (GCV2026)">0DTE</button>
+                <button type="button" class="dash-persp-btn" data-persp="goldf" title="Shift Strike & SD to GOLD.F (Basis Spread)">GOLD.F</button>
+                <button type="button" class="dash-persp-btn" data-persp="xau" title="Shift Strike & SD to XAU Spot (Basis Spread)">XAUUSD</button>
+              </div>
+            </div>
+
+            <div class="dash-divider"></div>
+
+            <!-- SD Band Overlay Highlight Buttons -->
+            <div class="dash-control-group">
+              <span class="dash-control-lbl">SD Bands:</span>
+              <div class="dash-highlight-btn-group">
+                <button type="button" class="dash-highlight-btn sd1 active" id="chk-dash-sd1" title="Toggle ±1 SD Range (68.3% Prob)">±1 SD</button>
+                <button type="button" class="dash-highlight-btn sd2 active" id="chk-dash-sd2" title="Toggle ±2 SD Range (95.4% Prob)">±2 SD</button>
+                <button type="button" class="dash-highlight-btn sd3" id="chk-dash-sd3" title="Toggle ±3 SD Range (99.7% Prob)">±3 SD</button>
+                <button type="button" class="dash-highlight-btn bell active" id="chk-dash-bell" title="Toggle Probability Bell Curve">Bell Curve</button>
+              </div>
+            </div>
+
+            <div class="dash-divider"></div>
+
+            <!-- Anchor Dropdown -->
+            <div class="dash-control-group">
+              <label for="sel-dash-anchor" class="dash-control-lbl">Anchor:</label>
+              <select id="sel-dash-anchor" class="dash-select">
+                <option value="current" selected>From Current (S)</option>
+                <option value="open">From Session Open</option>
+                <option value="both">Both (Current & Open)</option>
+              </select>
+            </div>
+
+            <!-- Strike Range Window Dropdown -->
+            <div class="dash-control-group">
+              <label for="sel-dash-range" class="dash-control-lbl">Window:</label>
+              <select id="sel-dash-range" class="dash-select">
+                <option value="near5" selected>Near ±5% (ATM)</option>
+                <option value="near3">Near ±3% (Tight)</option>
+                <option value="near10">Near ±10% (Wide)</option>
+                <option value="sd3">±3 SD Range</option>
+                <option value="all">All Strikes</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Full Widescreen Canvas -->
+        <div class="dash-canvas-wrapper">
+          <canvas id="dash-canvas"></canvas>
+        </div>
+      </section>
+
+      <!-- 4. Control Station & Raw Strikes Inspector -->
+      <section class="dash-control-station">
+        <div class="dash-station-left">
+          <!-- Expiry DTE Selector Pills -->
+          <div class="dash-station-group">
+            <span class="dash-control-lbl">EXPIRY (DTE):</span>
+            <div class="dash-dte-pills" id="dash-dte-pills">
+              <button class="dash-dte-pill active" data-dte="0" title="0 DTE Intraday Default">0 DTE</button>
+              <button class="dash-dte-pill" data-dte="1" title="1 DTE (Next Day)">1 DTE</button>
+              <button class="dash-dte-pill" data-dte="7" title="7 DTE (Weekly)">7 DTE</button>
+              <button class="dash-dte-pill" data-dte="14" title="14 DTE (2 Weeks)">14 DTE</button>
+              <button class="dash-dte-pill" data-dte="30" title="30 DTE (Monthly)">30 DTE</button>
+            </div>
+          </div>
+
+          <!-- Parameters Override Inputs -->
+          <div class="dash-station-group">
+            <label for="inp-dash-price" class="dash-control-lbl">Price (S):</label>
+            <input type="number" step="0.1" id="inp-dash-price" class="dash-input" style="width: 80px;" />
+          </div>
+          <div class="dash-station-group">
+            <label for="inp-dash-open" class="dash-control-lbl">Open:</label>
+            <input type="number" step="0.1" id="inp-dash-open" class="dash-input" style="width: 80px; color: #22c55e;" />
+          </div>
+          <div class="dash-station-group">
+            <label for="inp-dash-iv" class="dash-control-lbl">ATM IV %:</label>
+            <input type="number" step="0.1" id="inp-dash-iv" class="dash-input" style="width: 70px;" />
+          </div>
+
+          <!-- Offline Simulation Controls -->
+          <div class="dash-station-group">
+            <button class="dash-btn-sm" id="btn-dash-tick-up" title="Simulate +0.8 Price Tick">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="#22c55e"><path d="M7 14l5-5 5 5z"/></svg>
+              <span>+0.8</span>
+            </button>
+            <button class="dash-btn-sm" id="btn-dash-tick-down" title="Simulate -0.8 Price Tick">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="#ef4444"><path d="M7 10l5 5 5-5z"/></svg>
+              <span>-0.8</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="dash-station-right">
+          <button class="dash-btn-action" id="btn-toggle-raw" title="Toggle Raw Strike Volume & Vol Stl Inspector">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M10 10.02h5V21h-5zM17 21h3c1.1 0 2-.9 2-2v-9h-5v11zm3-18H4c-1.1 0-2 .9-2 2v3h20V5c0-1.1-.9-2-2-2zM2 19c0 1.1.9 2 2 2h4V10.02H2V19z"/></svg>
+            <span id="txt-toggle-raw">Inspect Strikes Data</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- 5. Raw Strikes Data Inspector Drawer (Expandable) -->
+      <section id="dash-raw-drawer" class="dash-raw-section" style="display: none;">
+        <div class="dash-raw-header">
+          <strong>Strike Volume, Open Interest & Calculated Vol Stl Inspector</strong>
+          <span id="dash-raw-count" style="font-size: 11.5px; color: #787b86;"></span>
+        </div>
+        <div class="dash-raw-table-wrap">
+          <table class="dash-raw-table">
+            <thead>
+              <tr>
+                <th>Strike</th>
+                <th>Calls Vol</th>
+                <th>Puts Vol</th>
+                <th>Total Volume</th>
+                <th>Calculated Vol Stl (%)</th>
+                <th>Distance to ATM</th>
+              </tr>
+            </thead>
+            <tbody id="dash-raw-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer Note -->
+    <footer class="dash-footer">
+      <span id="dash-footer-timestamp">Connected & Synced with CME Vol2Vol Data Engine</span>
+    </footer>
+  </div>
+
+  <!-- Core Modules -->
+  <script src="../core/options-math.js"></script>
+  <script src="../core/data-parser.js"></script>
+  <script src="../ui/vol2vol-chart.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>

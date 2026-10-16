@@ -1,0 +1,28 @@
+{
+  "name": "vol-strike-cal",
+  "version": "1.0.0",
+  "description": "CME Vol2Vol Options Intelligence — Chrome/Edge Extension & Standalone Desktop Analytics for TradingView Options",
+  "private": false,
+  "license": "MIT",
+  "scripts": {
+    "test": "node test/run-all.js",
+    "probe:live": "node test/probe-term-structure-live.js",
+    "audit:live": "node test/comprehensive-audit.js",
+    "build:exe": "powershell -ExecutionPolicy Bypass -File scripts/build-exe.ps1"
+  },
+  "keywords": [
+    "options",
+    "tradingview",
+    "volatility",
+    "cme",
+    "gold",
+    "xauusd",
+    "0dte",
+    "implied-volatility",
+    "term-structure",
+    "chrome-extension"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
