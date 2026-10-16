@@ -58,6 +58,7 @@
         "src/content/overlay.css",
         "standalone-test.html",
         "src/dashboard/*",
+        "docs/*",
         "icons/*"
       ],
       "matches": [

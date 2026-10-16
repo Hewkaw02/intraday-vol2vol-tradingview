@@ -988,6 +988,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  const btnOpenReadme = document.getElementById('btn-open-readme');
+  if (btnOpenReadme) {
+    btnOpenReadme.addEventListener('click', () => {
+      if (typeof chrome !== 'undefined' && chrome.tabs && chrome.runtime && chrome.runtime.getURL) {
+        chrome.tabs.create({ url: chrome.runtime.getURL('docs/readme.html') });
+      } else {
+        window.open('../../docs/readme.html', '_blank');
+      }
+    });
+  }
+
   btnOpenTv.addEventListener('click', () => {
     const targetUrl = 'https://www.tradingview.com/options/chain/?symbol=COMEX%3AGC1%21';
     if (typeof chrome !== 'undefined' && chrome.tabs && typeof chrome.tabs.create === 'function') {

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CME Vol2Vol™ Options Intelligence — Documentation &amp; User Guide</title>
+  <style>
+    :root {
+      --bg-primary: #0f121a;
+      --bg-secondary: #151924;
+      --bg-card: #1a1f2e;
+      --border-color: #262b38;
+      --text-primary: #e2e8f0;
+      --text-secondary: #94a3b8;
+      --accent-blue: #3b82f6;
+      --accent-green: #22c55e;
+      --accent-amber: #f59e0b;
+      --accent-cyan: #06b6d4;
+      --code-bg: #0b0e14;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Segoe UI', Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.65;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 28px;
+      background: rgba(21, 25, 36, 0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 16px;
+      color: #fff;
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid var(--accent-green);
+      color: var(--accent-green);
+      font-weight: 600;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      text-decoration: none;
+      color: #fff;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn:hover { border-color: var(--accent-blue); background: #23293d; }
+    .btn-primary { background: #2962ff; border-color: #3b82f6; }
+    .btn-primary:hover { background: #1e53e5; }
+
+    .container {
+      max-width: 1020px;
+      margin: 0 auto;
+      padding: 36px 24px 80px;
+    }
+
+    h1 { font-size: 28px; margin: 0 0 12px; color: #fff; }
+    h2 {
+      font-size: 20px;
+      margin: 40px 0 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-color);
+      color: #fff;
+    }
+    h3 { font-size: 16px; margin: 24px 0 8px; color: #f8fafc; }
+    p, li { color: var(--text-secondary); font-size: 14.5px; }
+    strong { color: var(--text-primary); }
+
+    .hero-sub {
+      font-size: 15.5px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+    }
+
+    .img-frame {
+      margin: 20px 0 28px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    .img-frame img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+      margin: 18px 0;
+    }
+
+    .card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 18px 20px;
+    }
+
+    .card h3 { margin-top: 0; }
+
+    .formula-box {
+      background: var(--code-bg);
+      border: 1px solid var(--border-color);
+      border-left: 3px solid var(--accent-blue);
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-family: Consolas, 'JetBrains Mono', monospace;
+      font-size: 13.5px;
+      color: #93c5fd;
+      margin: 12px 0;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      font-size: 13.5px;
+    }
+
+    th, td {
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+      background: var(--bg-card);
+      color: #fff;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    code {
+      background: var(--code-bg);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: Consolas, monospace;
+      font-size: 12.5px;
+      color: #60a5fa;
+    }
+
+    .footer-note {
+      margin-top: 48px;
+      padding: 16px 20px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 12.5px;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="#3b82f6"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+      <span>CME Vol2Vol™ Options Intelligence — User Guide &amp; README</span>
+      <span class="badge">v1.0.0</span>
+    </div>
+    <div class="nav-links">
+      <a href="../dashboard/dashboard.html" class="btn">Open Pro Dashboard</a>
+      <a href="../../standalone-test.html" class="btn">Interactive Simulator</a>
+      <a href="https://www.tradingview.com/options/chain/?symbol=COMEX%3AGC1%21" target="_blank" rel="noopener" class="btn btn-primary">TradingView Options</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1>CME Vol2Vol™ Options Intelligence</h1>
+    <p class="hero-sub">
+      Real-time CME QuikStrike-grade Options Volume, Implied Volatility Smile, Multi-Asset Standard Deviation Ranges (<code>0DTE</code> / <code>GOLD.F</code> / <code>XAUUSD</code>), and Event Volatility Term Structure for TradingView.
+    </p>
+
+    <div class="img-frame">
+      <img src="images/vol2vol-overview.svg" alt="CME Vol2Vol Dashboard Overview" />
+    </div>
+
+    <h2>1. Multi-Asset Standard Deviation Ranges (-3σ to +3σ)</h2>
+    <p>
+      Computes risk-neutral lognormal expected move bands using the exact CME QuikStrike convention:
+    </p>
+    <div class="formula-box">
+      K_k = S × exp( -0.5 × σ² × T  +  k × σ × √T )   for k ∈ { -3, -2, -1, 0, +1, +2, +3 }
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Row</th>
+          <th>Reference Price / Anchor</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1. 0DTE Active Contract</strong></td>
+          <td><code>COMEX:GCV2026</code> / <code>GCZ2026</code></td>
+          <td>Base standard deviation bands centered on the active delivery futures contract underlying the 0DTE options series.</td>
+        </tr>
+        <tr>
+          <td><strong>2. GOLD.F Futures</strong></td>
+          <td><code>BLACKBULL:GOLD.F</code></td>
+          <td>Automatically converts 0DTE SD bands via live basis spread: <code>Basis = GOLD.F − 0DTE_Price</code>.</td>
+        </tr>
+        <tr>
+          <td><strong>3. XAU Spot CFD</strong></td>
+          <td><code>OANDA:XAUUSD</code></td>
+          <td>Automatically converts 0DTE SD bands to Spot Gold via live basis spread: <code>Basis = XAUUSD − 0DTE_Price</code>.</td>
+        </tr>
+        <tr>
+          <td><strong>4. From Session Open</strong></td>
+          <td><strong>5:00 AM ICT / 18:00 ET Globex Open</strong></td>
+          <td>Anchors SD bands to the true daily session open (after the 3:00–5:00 AM maintenance break, not Previous Settlement) and shifts dynamically with the selected perspective (<code>0DTE</code>, <code>GOLD.F</code>, or <code>XAUUSD</code>).</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>2. CME Event Volatility Calculator / Vol Term Structure</h2>
+    <p>
+      Because TradingView's <code>voi-lens</code> endpoint provides volume only, this extension queries TradingView's live Options Scanner API (<code>scanner.tradingview.com/options/scan</code>) in the background to retrieve real per-strike Implied Volatility across upcoming expirations.
+    </p>
+
+    <div class="img-frame">
+      <img src="images/term-structure-preview.svg" alt="Vol Term Structure Preview" />
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Series ATM IV &amp; 1SD Move</h3>
+        <p>
+          Each series' ATM IV is linearly interpolated at its own underlying futures price (<code>F</code>), with exact time-to-expiration (<code>T</code>) resolved to <code>16:59:59 America/New_York</code> (automatic EDT/EST handling).
+        </p>
+      </div>
+      <div class="card">
+        <h3>Trading-Day Weighted Forward Vol</h3>
+        <p>
+          Automatically subtracts the <strong>48-hour CME Globex weekend closure</strong> (Friday 17:00 ET to Sunday 17:00 ET) so Friday-to-Monday Forward Volatility reflects true trading-day variance without weekend dilution.
+        </p>
+      </div>
+    </div>
+
+    <div class="formula-box">
+      σ_fwd = √[ (σ₂² × T₂ − σ₁² × T₁) / ΔT_trading ]
+    </div>
+
+    <h2>3. Volume Dominance &amp; Volume-Weighted Mean Strikes</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Call / Put Dominance</h3>
+        <p>
+          Measures net Call vs. Put volume share, Put/Call Ratio (<code>PCR = PutVol / CallVol</code>), and Call/Put Ratio (<code>CPR = CallVol / PutVol</code>).
+        </p>
+      </div>
+      <div class="card">
+        <h3>Mean Call / Mean Put / Mean Both</h3>
+        <p>
+          Computes volume-weighted center-of-gravity strikes:
+          <code>Mean Call = Σ(K·Vc)/ΣVc</code>,
+          <code>Mean Put = Σ(K·Vp)/ΣVp</code>, and
+          <code>Mean Both = Σ(K·V)/ΣV</code>.
+        </p>
+      </div>
+    </div>
+
+    <h2>4. One-Click Windows Launcher (Vol2Vol-Launcher.exe)</h2>
+    <p>
+      For users who prefer a one-click desktop experience, double-click <code>Vol2Vol-Launcher.exe</code> in the project root folder:
+    </p>
+    <div class="img-frame" style="max-width: 580px;">
+      <img src="images/launcher-preview.svg" alt="Vol2Vol Launcher Preview" />
+    </div>
+
+    <div class="footer-note">
+      <strong>Disclaimer:</strong> This project is an independent open-source analytical tool for educational and research purposes. It is not affiliated with, endorsed by, or sponsored by CME Group Inc. or TradingView Inc. Nothing in this software constitutes financial or trading advice.
+    </div>
+  </main>
+</body>
+</html>
