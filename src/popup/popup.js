@@ -563,15 +563,16 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const tab = tabs[0];
-      const isTvTab = tab.url && tab.url.includes('tradingview.com');
+      const isTvTab = tab.url && tab.url.includes('tradingview.com/options');
 
       if (!isTvTab) {
-        // Not directly on TradingView tab — search for any background TradingView options tab
+        // Not directly on TradingView Options tab — search for any background TradingView options tab
         chrome.tabs.query({ url: '*://*.tradingview.com/options/*' }, (tvTabs) => {
           if (tvTabs && tvTabs.length > 0) {
             activeTabId = tvTabs[0].id;
             requestTabData(activeTabId, 'BG TAB SYNCED');
           } else {
+            activeTabId = null;
             fallbackToStorageOrDemo();
           }
         });
@@ -989,12 +990,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   btnOpenTv.addEventListener('click', () => {
     const targetUrl = 'https://www.tradingview.com/options/chain/?symbol=COMEX%3AGC1%21';
-    if (typeof chrome !== 'undefined' && chrome.tabs) {
-      if (activeTabId) {
-        chrome.tabs.update(activeTabId, { active: true });
-      } else {
-        chrome.tabs.create({ url: targetUrl });
-      }
+    if (typeof chrome !== 'undefined' && chrome.tabs && chrome.tabs.query) {
+      chrome.tabs.query({ url: '*://*.tradingview.com/options/*' }, (tvTabs) => {
+        if (tvTabs && tvTabs.length > 0 && tvTabs[0].id) {
+          chrome.tabs.update(tvTabs[0].id, { active: true });
+          if (tvTabs[0].windowId && chrome.windows && chrome.windows.update) {
+            chrome.windows.update(tvTabs[0].windowId, { focused: true });
+          }
+        } else {
+          chrome.tabs.create({ url: targetUrl });
+        }
+      });
     } else {
       window.open(targetUrl, '_blank');
     }

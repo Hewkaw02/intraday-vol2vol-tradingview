@@ -662,7 +662,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const tab = tabs[0];
-      const isTvTab = tab.url && tab.url.includes('tradingview.com');
+      const isTvTab = tab.url && tab.url.includes('tradingview.com/options');
 
       if (!isTvTab) {
         chrome.tabs.query({ url: '*://*.tradingview.com/options/*' }, (tvTabs) => {
@@ -670,6 +670,7 @@ document.addEventListener('DOMContentLoaded', () => {
             activeTabId = tvTabs[0].id;
             requestTabData(activeTabId, 'BG TAB SYNCED');
           } else {
+            activeTabId = null;
             fallbackToStorageOrDemo();
           }
         });
